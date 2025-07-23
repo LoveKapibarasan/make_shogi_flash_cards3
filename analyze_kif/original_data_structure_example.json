@@ -1,0 +1,42 @@
+{
+  "meta": {
+    "id": "2025-07-22_0908781",
+    "data": {
+      "title": "Example Game",
+      "date": "2025-07-22",
+      "event": "Casual Match"
+    }
+  },
+  "file_id": "game_12345",
+  "player": {
+    "sente": {
+      "name": "Player A"
+    },
+    "gote": {
+      "name": "Player B"
+    }
+  },
+  "reverse": false,
+  "nodes": [
+    {
+      "id": "001",
+      "move": "7g7f",
+      "sfen": "lnsgkgsnl/1r5b1/p1ppppppp/9/9/9/P1PPPPPPP/1B5R1/LNSGKGSNL w - 1",
+      "cp": 30,
+      "pv": ["lnsgkgsnl/1r5b1/p1ppppppp/9/9/9/P1PPPPPPP/1B5R1/LNSGKGSNL w - 2","lnsgkgsnl/1r5b1/p1ppppppp/9/9/9/P1PPPPPPP/1B5R1/LNSGKGSNL w - 3"],
+      "index": 0,
+      "next_ids": ["002", "008"],
+      "comment": "Opening move by sente"
+    },
+    {
+      "id": "003",
+      "move": "3c3d",
+      "sfen": "lnsgkgsnl/1r5b1/p1ppppppp/9/9/9/P1PPPPPPP/1B5R1/LNSGKGSNL w - 1",
+      "cp": 35,
+      "pv": ["lnsgkgsnl/1r5b1/p1ppppppp/9/9/9/P1PPPPPPP/1B5R1/LNSGKGSNL w - 2","lnsgkgsnl/1r5b1/p1ppppppp/9/9/9/P1PPPPPPP/1B5R1/LNSGKGSNL w - 3"],
+      "index": 2,
+      "next_ids": ["006", "010"],
+      "comment": "Alternative opening move by sente"
+    }
+  ]
+}

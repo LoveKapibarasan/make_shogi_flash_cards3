@@ -1,0 +1,6 @@
+setoption name Threads value 6  
+setoption name NodesLimit value 20000000
+setoption name USI_Hash value 5120
+setoption name MultiPV value 3   
+
+isready
