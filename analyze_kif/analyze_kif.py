@@ -37,6 +37,8 @@ def analyze_kif():
             board = shogi.Board(sfen)
             
             for p in pv.split()[:4]:
+                if "rep_draw" in p:
+                    break
                 board.push_usi(p)
                 pv_sfen_list.append(board.sfen())
             

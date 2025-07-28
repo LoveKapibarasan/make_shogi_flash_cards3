@@ -9,12 +9,15 @@ def initialize_engine():
     load_dotenv()
     ENGINE_PATH = os.getenv("ENGINE_PATH")
     SETTING_FILE_PATH = os.getenv("SETTING_FILE_PATH")
-    cwd = os.path.dirname(ENGINE_PATH)
+    cwd = os.getenv("CURRENT_PATH")
     executable = os.path.basename(ENGINE_PATH)
     print("[DEBUG] cwd:", cwd)
     print("[DEBUG] Full Engine Path:", ENGINE_PATH)
     print("[DEBUG] Executable Name:", executable)
     
+    # Make the engine binary executable
+    subprocess.run(["chmod", "+x", ENGINE_PATH], check=True)
+
     process = subprocess.Popen(
         [f"./{executable}"], 
         stdin=subprocess.PIPE,
@@ -43,7 +46,11 @@ def read_output(proc, command, timeout=180.0):
     while True:
         time.sleep(2)
         if time.time() - start_time > timeout:
-            raise ValueError("timeout")
+            if cp and nodes and pv is not None:
+                print("[DEBUG] Timeout reached, returning partial results.")
+                return cp, nodes, pv
+            else:
+                raise ValueError("timeout")
         line = proc.stdout.readline()
         print("[DEBUG] Output:", line.strip())
         if not parse_line(line) is None:
@@ -51,6 +58,7 @@ def read_output(proc, command, timeout=180.0):
         if line.startswith("bestmove"):
             break
     return cp, nodes, pv
+
 
 
 

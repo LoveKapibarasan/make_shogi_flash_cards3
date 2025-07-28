@@ -1,0 +1,184 @@
+{
+  "meta": {
+    "id": "Love_Kapibara-masath-20250715_005228.kif",
+    "data": {
+      "black_player": "Love_Kapibara 四段",
+      "white_player": "masath 三段"
+    }
+  },
+  "nodes": [
+    {
+      "id": 54,
+      "move": "5h6h",
+      "sfen": "lgp1R2nl/1k1+N5/1sn4pp/pp4p2/2+b1S2PP/P2P1PP1R/1P1Sp1+b2/2K1G4/LN6L b G2Pgs2p 1",
+      "cp": -197,
+      "pv": [
+        "lgp1R2nl/1k1+N5/1sn4pp/pp4p2/2+b1S2PP/P2P1PP1R/1P1Sp1+b2/2KG5/LN6L w G2Pgs2p 2",
+        "lgp1R2nl/1k1+N5/1sn4pp/pp4p2/2+b1S2PP/P2P1PP1R/1P1Sp1+b2/2KG5/LN2s3L b G2Pg2p 3",
+        "lgp1R2nl/1k1+N5/1sn4pp/pp4p2/2+b1S2PP/P2P1PP2/1P1Sp1+b2/2KG4R/LN2s3L w G2Pg2p 4",
+        "lgp1R2nl/1k1+N5/1sn4pp/pp4p2/2+b1S2PP/P2P1P+b2/1P1Sp4/2KG4R/LN2s3L b G2Pg3p 5"
+      ],
+      "index": 0,
+      "next_ids": [
+        55
+      ],
+      "comment": ""
+    },
+    {
+      "id": 55,
+      "move": "S*5h",
+      "sfen": "lgp1R2nl/1k1+N5/1sn4pp/pp4p2/2+b1S2PP/P2P1PP1R/1P1Sp1+b2/2KG5/LN6L w G2Pgs2p 2",
+      "cp": 0,
+      "pv": [],
+      "index": 1,
+      "next_ids": [
+        56
+      ],
+      "comment": ""
+    },
+    {
+      "id": 56,
+      "move": "G*6c",
+      "sfen": "lgp1R2nl/1k1+N5/1sn4pp/pp4p2/2+b1S2PP/P2P1PP1R/1P1Sp1+b2/2KGs4/LN6L b G2Pg2p 3",
+      "cp": 0,
+      "pv": [],
+      "index": 2,
+      "next_ids": [
+        57
+      ],
+      "comment": ""
+    },
+    {
+      "id": 57,
+      "move": "3g5i",
+      "sfen": "lgp1R2nl/1k1+N5/1snG3pp/pp4p2/2+b1S2PP/P2P1PP1R/1P1Sp1+b2/2KGs4/LN6L w 2Pg2p 4",
+      "cp": 0,
+      "pv": [],
+      "index": 3,
+      "next_ids": [
+        58
+      ],
+      "comment": ""
+    },
+    {
+      "id": 58,
+      "move": "6b7a",
+      "sfen": "lgp1R2nl/1k1+N5/1snG3pp/pp4p2/2+b1S2PP/P2P1PP1R/1P1Sp4/2KGs4/LN2+b3L b 2Pg2p 5",
+      "cp": 0,
+      "pv": [],
+      "index": 4,
+      "next_ids": [
+        59
+      ],
+      "comment": ""
+    },
+    {
+      "id": 59,
+      "move": "8a7a",
+      "sfen": "lg+N1R2nl/1k7/1snG3pp/pp4p2/2+b1S2PP/P2P1PP1R/1P1Sp4/2KGs4/LN2+b3L w 3Pg2p 6",
+      "cp": 0,
+      "pv": [],
+      "index": 5,
+      "next_ids": [
+        60
+      ],
+      "comment": ""
+    },
+    {
+      "id": 60,
+      "move": "6g5h",
+      "sfen": "l1g1R2nl/1k7/1snG3pp/pp4p2/2+b1S2PP/P2P1PP1R/1P1Sp4/2KGs4/LN2+b3L b 3Pgn2p 7",
+      "cp": 0,
+      "pv": [],
+      "index": 6,
+      "next_ids": [
+        61
+      ],
+      "comment": ""
+    },
+    {
+      "id": 61,
+      "move": "5g5h+",
+      "sfen": "l1g1R2nl/1k7/1snG3pp/pp4p2/2+b1S2PP/P2P1PP1R/1P2p4/2KGS4/LN2+b3L w S3Pgn2p 8",
+      "cp": 0,
+      "pv": [],
+      "index": 7,
+      "next_ids": [
+        62
+      ],
+      "comment": ""
+    },
+    {
+      "id": 62,
+      "move": "6c7c",
+      "sfen": "l1g1R2nl/1k7/1snG3pp/pp4p2/2+b1S2PP/P2P1PP1R/1P7/2KG+p4/LN2+b3L b S3Pgsn2p 9",
+      "cp": 0,
+      "pv": [],
+      "index": 8,
+      "next_ids": [
+        63
+      ],
+      "comment": ""
+    },
+    {
+      "id": 63,
+      "move": "8b9c",
+      "sfen": "l1g1R2nl/1k7/1sG4pp/pp4p2/2+b1S2PP/P2P1PP1R/1P7/2KG+p4/LN2+b3L w SN3Pgsn2p 10",
+      "cp": 0,
+      "pv": [],
+      "index": 9,
+      "next_ids": [
+        64
+      ],
+      "comment": ""
+    },
+    {
+      "id": 64,
+      "move": "6h7g",
+      "sfen": "l1g1R2nl/9/ksG4pp/pp4p2/2+b1S2PP/P2P1PP1R/1P7/2KG+p4/LN2+b3L b SN3Pgsn2p 11",
+      "cp": 0,
+      "pv": [],
+      "index": 10,
+      "next_ids": [
+        65
+      ],
+      "comment": ""
+    },
+    {
+      "id": 65,
+      "move": "5i6i",
+      "sfen": "l1g1R2nl/9/ksG4pp/pp4p2/2+b1S2PP/P2P1PP1R/1PG6/2K1+p4/LN2+b3L w SN3Pgsn2p 12",
+      "cp": 0,
+      "pv": [],
+      "index": 11,
+      "next_ids": [
+        66
+      ],
+      "comment": ""
+    },
+    {
+      "id": 66,
+      "move": "7h6g",
+      "sfen": "l1g1R2nl/9/ksG4pp/pp4p2/2+b1S2PP/P2P1PP1R/1PG6/2K1+p4/LN1+b4L b SN3Pgsn2p 13",
+      "cp": 0,
+      "pv": [],
+      "index": 12,
+      "next_ids": [
+        67
+      ],
+      "comment": ""
+    },
+    {
+      "id": 67,
+      "move": "G*5g",
+      "sfen": "l1g1R2nl/9/ksG4pp/pp4p2/2+b1S2PP/P2P1PP1R/1PGK5/4+p4/LN1+b4L w SN3Pgsn2p 14",
+      "cp": 0,
+      "pv": [],
+      "index": 13,
+      "next_ids": [
+        68
+      ],
+      "comment": ""
+    }
+  ]
+}

@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Shogi Board</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: #fafafa;
+    }
+
+    #controls {
+      margin: 10px;
+      text-align: center;
+    }
+
+    #container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .hand {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      min-height: 60px;
+      padding: 8px;
+      border: 2px dashed #aaa;
+      background: #f8f8f8;
+      width: 90vw;
+      max-width: 540px;
+      margin: 8px 0;
+    }
+
+    #board {
+      display: grid;
+      grid-template-columns: repeat(9, 1fr);
+      grid-template-rows: repeat(9, 1fr);
+      aspect-ratio: 1;
+      border: 2px solid #333;
+    }
+
+
+  .cell {
+    border: 1px solid #888;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: calc(3vw + 10px);
+    user-select: none;
+    height: calc(3vw + 10px);
+  }
+
+  .piece {
+    cursor: pointer;
+    height: 80%;
+    font-size: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+.selected {
+  outline: 2px solid red !important;
+}
+
+  </style>
+</head>
+<body>
+  <div id="controls">
+    <input type="text" id="sfenInput" value="lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL w - 1" style="width: 60vw;">
+    <button onclick="loadSFEN()">Load SFEN</button>
+    <button onclick="alert(currentSFEN)">Show SFEN</button>
+    <button onclick="rotateBoard()">Rotate Board</button>
+  </div>
+
+  <div id="container">
+    <div id="hand-white" class="hand"></div>
+    <div id="board"></div>
+    <div id="hand-black" class="hand"></div>
+  </div>
+
+  <script>
+    const moveSound = new Audio("https://cxu.igu.mybluehost.me/wp-content/uploads/2025/06/spo_ge_syogi_s03.mp3");
+    const pieceMap = {
+      'P': '歩', 'L': '香', 'N': '桂', 'S': '銀', 'G': '金',
+      'B': '角', 'R': '飛', 'K': '玉',
+      '+P': 'と', '+L': '杏', '+N': '圭', '+S': '全',
+      '+B': '馬', '+R': '龍'
+    };
+
+    let currentSFEN = "";
+    let rotated = false;
+    let selectedPiece = null;
+
+function transformSFEN(sfen) {
+  if (!rotated) return sfen;
+
+  const parts = sfen.trim().split(' ');
+  if (parts.length < 4) return sfen;
+
+  const boardPart = parts[0];
+  const turn = parts[1];
+  const hands = parts[2];
+  const moveNum = parts[3];
+
+  // --- 1. Flip board ---
+
+let flippedBoard = boardPart
+  .split('/')
+  .map(row => {
+    // Expand numbers to spaces
+    const expanded = row.replace(/\d/g, d => ' '.repeat(d));
+    const chars = [];
+
+    for (let i = 0; i < expanded.length; i++) {
+      if (expanded[i] === '+') {
+        chars.push(expanded[i] + expanded[i + 1]);
+        i++; // skip next
+      } else {
+        chars.push(expanded[i]);
+      }
+    }
+
+    // Flip and reverse each character
+    const flipped = chars.reverse().map(token => {
+      if (token.length === 2 && token[0] === '+') {
+        const flippedChar = token[1] === token[1].toLowerCase()
+          ? token[1].toUpperCase()
+          : token[1].toLowerCase();
+        return '+' + flippedChar;
+      } else if (/[a-zA-Z]/.test(token)) {
+        return token === token.toLowerCase()
+          ? token.toUpperCase()
+          : token.toLowerCase();
+      } else {
+        return token; // space or unknown
+      }
+    });
+
+    // Recompress to SFEN row string
+    return flipped.join('').replace(/ +/g, space => space.length);
+  })
+  .reverse()
+  .join('/');
+
+
+  // --- 2. Flip hands and sort ---
+  let flippedHands = '-';
+  if (hands !== '-') {
+    const handMap = {};
+    const matches = hands.match(/(\d*[a-zA-Z])/g);
+    if (matches) {
+      for (const token of matches) {
+        const count = parseInt(token) || 1;
+        const code = token.replace(/^\d*/, '');
+        const flippedCode = code === code.toLowerCase() ? code.toUpperCase() : code.toLowerCase();
+        handMap[flippedCode] = (handMap[flippedCode] || 0) + count;
+      }
+    }
+
+    const order = ['R', 'B', 'G', 'S', 'N', 'L', 'P'];
+    const result = [];
+    for (const c of order) {
+      if (handMap[c]) result.push((handMap[c] > 1 ? handMap[c] : '') + c);
+      if (handMap[c.toLowerCase()]) result.push((handMap[c.toLowerCase()] > 1 ? handMap[c.toLowerCase()] : '') + c.toLowerCase());
+    }
+
+    flippedHands = result.length ? result.join('') : '-';
+  }
+
+  // --- 3. Flip turn ---
+  const flippedTurn = turn === 'w' ? 'b' : 'w';
+
+  return [flippedBoard, flippedTurn, flippedHands, moveNum].join(' ');
+}
+
+
+    function playMoveSound() {
+      moveSound.currentTime = 0; // Reset to start
+      moveSound.play();
+    }
+
+    function createPiece(code, color, promoted = false) {
+      const piece = document.createElement('div');
+      piece.classList.add('piece');
+      const displayCode = promoted ? '+' + code.toUpperCase() : code.toUpperCase();
+      piece.textContent = pieceMap[displayCode] || '?';
+      piece.dataset.code = code.toUpperCase();
+      piece.dataset.color = color;
+      piece.dataset.promoted = promoted ? 'true' : 'false';
+
+      piece.style.transform = color === 'w' ? 'rotate(180deg)' : '';
+
+     piece.addEventListener('click', (e) => {
+        e.stopPropagation(); // prevent deselect from bubbling
+        onPieceClick(piece);
+    });
+
+      return piece;
+    }
+
+function onPieceClick(piece) {
+  if (selectedPiece === piece) {
+    piece.classList.remove('selected');
+    selectedPiece = null;
+    return;
+  }
+
+if (selectedPiece && selectedPiece !== piece) {
+  const from = selectedPiece;
+  const to = piece;
+
+
+    const cell = to.closest('.cell'); // safe access to board cell
+
+    if (cell) {
+      const baseCode = to.dataset.code;
+      const hand = document.getElementById(from.dataset.color === 'b' ? 'hand-black' : 'hand-white');
+      const captured = createPiece(baseCode, from.dataset.color, false);
+      hand.appendChild(captured);
+
+      const row = parseInt(cell.id.split('-')[1]);
+      const promotable = ['P', 'L', 'N', 'S', 'B', 'R'].includes(from.dataset.code);
+      const inZone = (from.dataset.color === 'b' && row <= 2) || (from.dataset.color === 'w' && row >= 6);
+      let promote = false;
+
+      if (promotable && inZone && from.dataset.promoted !== 'true') {
+        promote = confirm('Promote this piece?');
+      }
+
+      const newPiece = createPiece(from.dataset.code, from.dataset.color, promote || from.dataset.promoted === 'true');
+      cell.innerHTML = '';
+      cell.appendChild(newPiece);
+
+      from.remove();
+      selectedPiece = null;
+
+      playMoveSound();
+      currentSFEN = getSFEN();
+      return;
+    }
+}
+
+
+  
+
+  selectedPiece = piece;
+  selectedPiece.classList.add('selected');
+}
+
+
+
+function onCellClick(cell) {
+  if (!selectedPiece) {
+    return;
+  }
+  const data = selectedPiece.dataset;
+
+
+  // Promotion logic
+  const row = parseInt(cell.id.split('-')[1]);
+  const promotable = ['P', 'L', 'N', 'S', 'B', 'R'].includes(data.code);
+  const inZone = (data.color === 'b' && row <= 2) || (data.color === 'w' && row >= 6);
+  let promote = false;
+  if (promotable && inZone && data.promoted !== 'true') {
+    promote = confirm('Promote this piece?');
+  }
+
+  // Move piece
+  const newPiece = createPiece(data.code, data.color, promote || data.promoted === 'true');
+  cell.innerHTML = '';
+  cell.appendChild(newPiece);
+  selectedPiece.remove();
+  selectedPiece = null;
+
+  playMoveSound();
+  // Update SFEN after move
+  currentSFEN = getSFEN();
+}
+
+
+
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.cell') && !e.target.classList.contains('piece')) {
+        if (selectedPiece) selectedPiece.classList.remove('selected');
+        selectedPiece = null;
+      }
+    });
+
+    function createCell(row, col) {
+      const cell = document.createElement('div');
+      cell.classList.add('cell');
+      cell.id = `cell-${row}-${col}`;
+      cell.onclick = () => onCellClick(cell);
+      return cell;
+    }
+
+    function getSFEN() {
+      let rows = [];
+      for (let row = 0; row < 9; row++) {
+        let rowStr = '';
+        let empty = 0;
+        for (let col = 0; col < 9; col++) {
+          const cell = document.getElementById(`cell-${row}-${col}`);
+          const piece = cell?.firstChild;
+          if (!piece) {
+            empty++;
+            continue;
+          }
+          if (empty > 0) {
+            rowStr += empty;
+            empty = 0;
+          }
+          let c = piece.dataset.code;
+          const p = piece.dataset.promoted === 'true';
+          const colr = piece.dataset.color;
+          let symbol = colr === 'w' ? c.toLowerCase() : c.toUpperCase();
+          if (p) symbol = '+' + symbol;
+          rowStr += symbol;
+        }
+        if (empty > 0) rowStr += empty;
+        rows.push(rowStr);
+      }
+      const boardPart = rows.join('/');
+      // --- 2. Mochigoma (hands) ---
+     const handMap = {}; // z.B. { R: 2, p: 3 }
+
+    document.querySelectorAll('#hand-black .piece, #hand-white .piece').forEach(piece => {
+      const code = piece.dataset.code;
+      const color = piece.dataset.color;
+      const symbol = color === 'b' ? code.toUpperCase() : code.toLowerCase();
+      handMap[symbol] = (handMap[symbol] || 0) + 1;
+     });
+
+    // Sortierung: SFEN-standardisiert
+    const sfenOrder = ['R', 'B', 'G', 'S', 'N', 'L', 'P'];
+    const hands = [];
+
+    for (const key of sfenOrder) {
+      const upper = handMap[key];
+      const lower = handMap[key.toLowerCase()];
+      if (upper) hands.push((upper > 1 ? upper : '') + key);
+      if (lower) hands.push((lower > 1 ? lower : '') + key.toLowerCase());
+    }
+
+  const handsPart = hands.length ? hands.join('') : '-';
+
+  // --- 3. Turn & move number ---
+  const turn = currentSFEN.split(' ')[1]; 
+  const move = currentSFEN.split(' ')[3]; 
+
+  return `${boardPart} ${turn} ${handsPart} ${move}`;
+    }
+
+    function rotateBoard() {
+      rotated = !rotated;
+      currentSFEN = transformSFEN(currentSFEN);
+      loadSFENFrom(currentSFEN);
+    }
+
+    function loadSFEN() {
+      const sfen = document.getElementById('sfenInput').value.trim();
+      currentSFEN = transformSFEN(sfen);
+      loadSFENFrom(currentSFEN);
+    }
+
+    function loadSFENFrom(sfen) {
+      boardPart = sfen.split(' ')[0];
+      mochigoma = sfen.split(' ')[2];
+      const board = document.getElementById('board');
+      board.innerHTML = '';
+      const rows = boardPart.split('/');
+      for (let row = 0; row < 9; row++) {
+        let col = 0;
+        const line = rows[row];
+        for (let i = 0; i < line.length; i++) {
+          const ch = line[i];
+          if (/[1-9]/.test(ch)) {
+            const emptyCount = parseInt(ch);
+            for (let j = 0; j < emptyCount; j++) {
+              board.appendChild(createCell(row, col++));
+            }
+          } else {
+            let promoted = false;
+            let code = ch;
+            if (ch === '+') {
+              promoted = true;
+              code = line[++i];
+            }
+            const color = code === code.toUpperCase() ? 'b' : 'w';
+            const cell = createCell(row, col);
+            cell.appendChild(createPiece(code, color, promoted));
+            board.appendChild(cell);
+            col++;
+          }
+        }
+      }
+  document.getElementById('hand-black').innerHTML = '';
+  document.getElementById('hand-white').innerHTML = '';
+
+  if (mochigoma !== '-') {
+    const matches = mochigoma.match(/(\d*[a-zA-Z])/g);
+    if (matches) {
+      for (const token of matches) {
+        const count = parseInt(token) || 1;
+        const code = token.replace(/^\d*/, '');
+        const color = code === code.toUpperCase() ? 'b' : 'w';
+        const hand = document.getElementById(color === 'b' ? 'hand-black' : 'hand-white');
+        for (let i = 0; i < count; i++) {
+          hand.appendChild(createPiece(code.toUpperCase(), color, false));
+        }
+     }
+   }
+ }
+}
+
+    loadSFEN();
+  </script>
+</body>
+</html>
